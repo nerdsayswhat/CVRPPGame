@@ -1,0 +1,54 @@
+{
+    "name": "XR_Actions",
+    "maps": [
+        {
+            "name": "Drawing",
+            "id": "df826506-e656-4030-94e2-3a896c51c3e3",
+            "actions": [
+                {
+                    "name": "StartDrawing",
+                    "type": "Button",
+                    "id": "0cb75243-b4fa-407d-984c-93dd69e4dfa1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "StopDrawing",
+                    "type": "Button",
+                    "id": "3d8c2c14-683a-48a4-b738-aefa7699c174",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "eac23f15-74f4-487f-9e13-6c834eaf2f78",
+                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "StartDrawing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "205d906b-be26-4f34-8fd4-b6c2606fdd2f",
+                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "StopDrawing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
