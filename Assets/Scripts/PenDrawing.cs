@@ -200,8 +200,8 @@ public class PenDrawing : MonoBehaviour
 
         if (straightness > 0.95f)
         {
-            Debug.Log("📏 STRAIGHT LINE detected → SPAWN CUBE");
-            SpawnCubeWithLifetime();
+            Debug.Log("📏 STRAIGHT LINE detected → SPAWN BOARD");
+            SpawnCubeWithLifetime(); // now spawns Board instead
             return;
         }
         // ------------------------------------
@@ -225,7 +225,6 @@ public class PenDrawing : MonoBehaviour
             return;
         }
 
-        // ---- ONLY SPHERECIRCLE REMAINS AS A VALID GESTURE ----
         if (bestName == "spherecircle")
         {
             Debug.Log("⚪ SphereCircle matched → SPAWN SPHERE");
@@ -250,11 +249,20 @@ public class PenDrawing : MonoBehaviour
         if (lastCube != null)
             Destroy(lastCube, cubeLifetime);
 
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube.transform.position = avg;
-        cube.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        // -----------------------------
+        // ✔ REPLACED CUBE WITH BOARD
+        // -----------------------------
+        GameObject boardPrefab = Resources.Load<GameObject>("Board");
 
-        lastCube = cube;
+        if (boardPrefab == null)
+        {
+            Debug.LogError("❌ Board.prefab NOT FOUND in Resources folder!");
+            return;
+        }
+
+        GameObject board = Instantiate(boardPrefab, avg, Quaternion.identity);
+
+        lastCube = board;
     }
 
     public void SpawnSphere()
