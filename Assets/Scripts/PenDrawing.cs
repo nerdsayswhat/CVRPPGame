@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using System.Collections.Generic;
+using System.IO;
 
 public class PenDrawing : MonoBehaviour
 {
@@ -15,18 +16,13 @@ public class PenDrawing : MonoBehaviour
     [Header("Cube Settings")]
     public float cubeLifetime = 5f;
 
-    // ---------------------------
-    // $1 GESTURE RECOGNITION
-    // ---------------------------
-    private DollarRecognizer recognizer;
-    private List<Vector2> gesturePoints = new List<Vector2>();
-    public string lastRecognizedGesture = "";
-
     [Header("Gesture Recording")]
     public bool recordGesture = false;
-    public string recordGestureName = "";
+    public string gestureName = "";
+    public string gesturesFolder = "Assets/Gestures";
 
-    // ---------------------------
+    private DollarRecognizer recognizer;
+    private List<Vector2> gesturePoints = new List<Vector2>();
 
     private bool isHeld = false;
     private bool isDrawing = false;
@@ -61,7 +57,8 @@ public class PenDrawing : MonoBehaviour
 
     void Update()
     {
-        if (!isHeld || !isDrawing || line == null) return;
+        if (!isHeld || !isDrawing || line == null)
+            return;
 
         Vector3 pos = drawingPoint.position;
 
@@ -71,14 +68,17 @@ public class PenDrawing : MonoBehaviour
             line.positionCount = points.Count;
             line.SetPosition(points.Count - 1, pos);
 
-            // Add 3D → 2D point for recognizer
             Vector2 screenPos = Camera.main.WorldToScreenPoint(pos);
             gesturePoints.Add(screenPos);
         }
     }
 
-    // ----- GRAB -----
-    private void OnGrab(SelectEnterEventArgs args) => isHeld = true;
+    // ---------------- GRAB HANDLERS ----------------
+
+    private void OnGrab(SelectEnterEventArgs args)
+    {
+        isHeld = true;
+    }
 
     private void OnRelease(SelectExitEventArgs args)
     {
@@ -86,7 +86,8 @@ public class PenDrawing : MonoBehaviour
         StopDrawingInternal();
     }
 
-    // ----- ACTIVATE / DEACTIVATE -----
+    // ---------------- DRAWING TOGGLE ----------------
+
     private void OnStartDrawing(ActivateEventArgs args)
     {
         if (!isHeld) return;
@@ -98,7 +99,8 @@ public class PenDrawing : MonoBehaviour
         StopDrawingInternal();
     }
 
-    // ----- Drawing Begin -----
+    // ---------------- START DRAWING ----------------
+
     private void BeginDrawing()
     {
         if (isDrawing) return;
@@ -107,12 +109,9 @@ public class PenDrawing : MonoBehaviour
         points.Clear();
         gesturePoints.Clear();
 
-        // Recording mode log
-        if (recordGesture)
-            Debug.Log("🎤 Gesture Recording STARTED…");
-
         GameObject lineObj = new GameObject("DrawnLine");
         line = lineObj.AddComponent<LineRenderer>();
+
         line.useWorldSpace = true;
         line.widthMultiplier = lineWidth;
         line.numCornerVertices = 8;
@@ -122,73 +121,26 @@ public class PenDrawing : MonoBehaviour
         line.material = new Material(shader);
         line.startColor = Color.white;
         line.endColor = Color.white;
+
+        if (recordGesture)
+            Debug.Log("📘 Recording started for: " + gestureName);
     }
 
-    // ----- Drawing Stop -----
+    // ---------------- STOP DRAWING ----------------
+
     private void StopDrawingInternal()
     {
         if (!isDrawing) return;
-
         isDrawing = false;
 
-        // ------ RECORDING MODE ------
         if (recordGesture)
         {
-            Debug.Log("🎤 Gesture Recording STOPPED");
-
-            if (gesturePoints.Count < 5)
-            {
-                Debug.LogError("❌ Recording FAILED — too few points.");
-            }
-            else if (string.IsNullOrWhiteSpace(recordGestureName))
-            {
-                Debug.LogError("❌ Recording FAILED — gesture name empty.");
-            }
-            else
-            {
-                recognizer.SavePattern(recordGestureName, gesturePoints);
-                Debug.Log("✅ Gesture Recorded Successfully: " + recordGestureName);
-            }
-
-            recordGesture = false;
-            recordGestureName = "";
+            SaveGestureToJSON();
+            Debug.Log("📗 Recording stopped.");
         }
         else
         {
-            // ------ NORMAL GESTURE MODE ------
-            if (gesturePoints.Count > 2)
-            {
-                var result = recognizer.Recognize(gesturePoints);
-
-                if (result.Match != null)
-                {
-                    lastRecognizedGesture = result.Match.Name;
-                    Debug.Log("GESTURE RECOGNIZED: " + lastRecognizedGesture);
-                }
-                else
-                {
-                    Debug.Log("No gesture recognized.");
-                }
-            }
-        }
-
-        // Spawn objects based on gesture
-        if (points.Count > 0)
-        {
-            List<Vector2> flat = MakeFlat(points);
-            var shape = recognizer.Recognize(flat);
-
-            if (shape.Match != null)
-            {
-                if (shape.Match.Name == "Line")
-                {
-                    SpawnSphere();
-                }
-                else if (shape.Match.Name == "Square")
-                {
-                    SpawnCubeWithLifetime();
-                }
-            }
+            RecognizeAndSpawnObject();
         }
 
         if (line != null)
@@ -198,91 +150,95 @@ public class PenDrawing : MonoBehaviour
         gesturePoints.Clear();
     }
 
-    // ----- FLATTEN TO 2D -----
-    public List<Vector2> MakeFlat(List<Vector3> points)
+    // ---------------- SAVE GESTURE ----------------
+
+    private void SaveGestureToJSON()
     {
-        if (points == null || points.Count == 0)
-            return new List<Vector2>();
-
-        Vector3 mean = Vector3.zero;
-        foreach (var p in points) mean += p;
-        mean /= points.Count;
-
-        // covariance matrix
-        float xx = 0, xy = 0, xz = 0;
-        float yy = 0, yz = 0, zz = 0;
-
-        foreach (var p in points)
+        if (gesturePoints.Count < 5)
         {
-            Vector3 r = p - mean;
-            xx += r.x * r.x;
-            xy += r.x * r.y;
-            xz += r.x * r.z;
-            yy += r.y * r.y;
-            yz += r.y * r.z;
-            zz += r.z * r.z;
+            Debug.Log("❌ Gesture too small — NOT saved.");
+            return;
         }
 
-        float[,] cov = new float[3, 3] {
-            { xx, xy, xz },
-            { xy, yy, yz },
-            { xz, yz, zz }
-        };
-
-        Vector3 eigen1 = PowerIteration(cov);
-        Vector3 eigen2 = PowerIteration(RemoveComponent(cov, eigen1));
-
-        Vector3 axisX = eigen1.normalized;
-        Vector3 axisY = eigen2.normalized;
-
-        List<Vector2> result = new List<Vector2>(points.Count);
-
-        foreach (var p in points)
+        if (string.IsNullOrWhiteSpace(gestureName))
         {
-            Vector3 d = p - mean;
-            float u = Vector3.Dot(d, axisX);
-            float v = Vector3.Dot(d, axisY);
-            result.Add(new Vector2(u, v));
+            Debug.Log("❌ gestureName is empty — NOT saved.");
+            return;
         }
 
-        return result;
+        if (!Directory.Exists(gesturesFolder))
+            Directory.CreateDirectory(gesturesFolder);
+
+        string filePath = Path.Combine(
+            gesturesFolder,
+            $"{gestureName}_{System.DateTime.Now.Ticks}.json"
+        );
+
+        string json = JsonUtility.ToJson(new GestureJSON(gestureName, gesturePoints.ToArray()), true);
+        File.WriteAllText(filePath, json);
+
+        Debug.Log("💾 Saved gesture: " + filePath);
     }
 
-    private Vector3 PowerIteration(float[,] m)
-    {
-        Vector3 v = new Vector3(1, 1, 1).normalized;
+    // ---------------- RECOGNIZE + SPAWN ----------------
 
-        for (int i = 0; i < 10; i++)
+    private void RecognizeAndSpawnObject()
+    {
+        if (gesturePoints.Count < 5)
         {
-            Vector3 mv = new Vector3(
-                m[0, 0] * v.x + m[0, 1] * v.y + m[0, 2] * v.z,
-                m[1, 0] * v.x + m[1, 1] * v.y + m[1, 2] * v.z,
-                m[2, 0] * v.x + m[2, 1] * v.y + m[2, 2] * v.z
-            );
-            v = mv.normalized;
+            Debug.Log("❌ Not enough points to recognize.");
+            return;
         }
-        return v;
+
+        // ---------- LINE DETECTOR ----------
+        float totalLength = 0f;
+        for (int i = 1; i < gesturePoints.Count; i++)
+            totalLength += Vector2.Distance(gesturePoints[i], gesturePoints[i - 1]);
+
+        Vector2 overall = gesturePoints[gesturePoints.Count - 1] - gesturePoints[0];
+        float straightness = overall.magnitude / totalLength;
+
+        if (straightness > 0.95f)
+        {
+            Debug.Log("📏 STRAIGHT LINE detected → SPAWN CUBE");
+            SpawnCubeWithLifetime();
+            return;
+        }
+        // ------------------------------------
+
+        var result = recognizer.Recognize(gesturePoints);
+
+        if (result.Match == null)
+        {
+            Debug.Log("❌ No gesture matched.");
+            return;
+        }
+
+        float score = result.Score;
+        string bestName = result.Match.Name.ToLower();
+
+        Debug.Log($"🔍 Gesture: {bestName} (score={score})");
+
+        if (score < 0.80f)
+        {
+            Debug.Log("❌ Match too weak — no spawn.");
+            return;
+        }
+
+        // ---- ONLY SPHERECIRCLE REMAINS AS A VALID GESTURE ----
+        if (bestName == "spherecircle")
+        {
+            Debug.Log("⚪ SphereCircle matched → SPAWN SPHERE");
+            SpawnSphere();
+        }
+        else
+        {
+            Debug.Log("❌ Unknown gesture name: " + bestName);
+        }
     }
 
-    private float[,] RemoveComponent(float[,] m, Vector3 axis)
-    {
-        float[,] r = new float[3, 3];
-        float ax = axis.x, ay = axis.y, az = axis.z;
+    // ---------------- SPAWNERS ----------------
 
-        float[,] P = {
-            { ax * ax, ax * ay, ax * az },
-            { ay * ax, ay * ay, ay * az },
-            { az * ax, az * ay, az * az }
-        };
-
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 3; j++)
-                r[i, j] = m[i, j] - P[i, j];
-
-        return r;
-    }
-
-    // ----- SPAWN OBJECTS -----
     public void SpawnCubeWithLifetime()
     {
         if (points.Count == 0) return;
@@ -311,28 +267,74 @@ public class PenDrawing : MonoBehaviour
 
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.transform.position = avg;
-        sphere.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+        sphere.transform.localScale = Vector3.one * 0.25f;
     }
 
-    // ----- DEFAULT TEMPLATES -----
+    // ---------------- LOAD GESTURES ----------------
+
     private void LoadGestureTemplates()
     {
-        List<Vector2> lineGesture = new List<Vector2>()
+        if (!Directory.Exists(gesturesFolder))
         {
-            new Vector2(0,0),
-            new Vector2(100,0),
-            new Vector2(200,0),
-        };
-        recognizer.SavePattern("Line", lineGesture);
+            Debug.Log("⚠ No gestures folder.");
+            return;
+        }
 
-        List<Vector2> squareGesture = new List<Vector2>()
+        string[] files = Directory.GetFiles(gesturesFolder, "*.json");
+
+        foreach (string file in files)
         {
-            new Vector2(0,0),
-            new Vector2(100,0),
-            new Vector2(100,100),
-            new Vector2(0,100),
-            new Vector2(0,0),
-        };
-        recognizer.SavePattern("Square", squareGesture);
+            string json = File.ReadAllText(file).Trim();
+
+            if (string.IsNullOrEmpty(json) || !json.Contains("{"))
+            {
+                Debug.LogWarning("❌ Invalid JSON deleted: " + file);
+                File.Delete(file);
+                continue;
+            }
+
+            GestureJSON g;
+            try
+            {
+                g = JsonUtility.FromJson<GestureJSON>(json);
+            }
+            catch
+            {
+                Debug.LogWarning("❌ Parse failure — deleted: " + file);
+                File.Delete(file);
+                continue;
+            }
+
+            if (g == null || string.IsNullOrWhiteSpace(g.name) || g.points == null || g.points.Length < 5)
+            {
+                Debug.LogWarning("❌ Invalid gesture deleted: " + file);
+                File.Delete(file);
+                continue;
+            }
+
+            recognizer.SavePattern(g.name, g.ToVector2List());
+        }
+
+        Debug.Log($"📚 Loaded gesture templates: {files.Length}");
+    }
+
+    // ---------------- JSON CLASS ----------------
+
+    [System.Serializable]
+    public class GestureJSON
+    {
+        public string name;
+        public Vector2[] points;
+
+        public GestureJSON(string name, Vector2[] points)
+        {
+            this.name = name;
+            this.points = points;
+        }
+
+        public List<Vector2> ToVector2List()
+        {
+            return new List<Vector2>(points);
+        }
     }
 }
