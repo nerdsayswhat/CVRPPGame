@@ -8,6 +8,7 @@ public class AnimateHandOnInput : MonoBehaviour
 {
     public InputActionProperty triggerAnimationAction;
     public InputActionProperty gripAnimationAction;
+    public InputActionProperty thumbStickAnimationAction;
     public Animator handAnimator;
 
     // Update is called once per frame
@@ -18,5 +19,8 @@ public class AnimateHandOnInput : MonoBehaviour
 
         float gripValue = gripAnimationAction.action.ReadValue<float>();
         handAnimator.SetFloat("Grip", gripValue);
+
+        float thumbStickValue = gripAnimationAction.action.ReadValue<float>();
+        handAnimator.SetFloat("thumStick", thumbStickValue);
     }
 }
