@@ -705,10 +705,7 @@ MonoBehaviour:
   drawingPoint: {fileID: 470898644}
   pointDistance: 0.01
   lineWidth: 0.01
-  cubeLifetime: 3
-  recordGesture: 0
-  gestureName: 
-  gesturesFolder: Assets/Gestures
+  cubeLifetime: 5
 --- !u!114 &1428668459
 MonoBehaviour:
   m_ObjectHideFlags: 0
