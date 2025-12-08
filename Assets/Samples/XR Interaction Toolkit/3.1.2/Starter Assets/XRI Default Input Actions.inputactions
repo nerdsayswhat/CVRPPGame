@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "XRI Default Input Actions",
     "maps": [
         {
@@ -327,6 +328,15 @@
             "name": "XRI Left",
             "id": "5fe596f9-1b7b-49b7-80a7-3b5195caf74d",
             "actions": [
+                {
+                    "name": "XButton",
+                    "type": "Value",
+                    "id": "eb789389-454e-4c75-ba9e-212e679f5702",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
                 {
                     "name": "Position",
                     "type": "Value",
@@ -859,6 +869,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Thumbstick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "19f74327-9a7a-401d-a0d0-b00aa17c62be",
+                    "path": "<XRInputV1::Oculus::MetaQuestTouchPlusControllerOpenXR>{LeftHand}/primarybutton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "XButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6017072e-2727-4c90-a123-665f5aebfcd1",
+                    "path": "<QuestProTouchController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "XButton",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
