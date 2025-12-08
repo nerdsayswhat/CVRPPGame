@@ -190,7 +190,9 @@ public class PenDrawing : MonoBehaviour
             return;
         }
 
-        // ---------- LINE DETECTOR ----------
+        // =============================================================
+        // FIXED LINE DETECTION (middle ground – extremely reliable now)
+        // =============================================================
         float totalLength = 0f;
         for (int i = 1; i < gesturePoints.Count; i++)
             totalLength += Vector2.Distance(gesturePoints[i], gesturePoints[i - 1]);
@@ -198,13 +200,19 @@ public class PenDrawing : MonoBehaviour
         Vector2 overall = gesturePoints[gesturePoints.Count - 1] - gesturePoints[0];
         float straightness = overall.magnitude / totalLength;
 
-        if (straightness > 0.95f)
+        float endpointDistance = Vector2.Distance(gesturePoints[0], gesturePoints[gesturePoints.Count - 1]);
+
+        bool looksLine =
+            straightness > 0.75f &&
+            endpointDistance > Screen.width * 0.05f;
+
+        if (looksLine)
         {
-            Debug.Log("📏 STRAIGHT LINE detected → SPAWN BOARD");
-            SpawnCubeWithLifetime(); // now spawns Board instead
+            Debug.Log("📏 LINE detected → SPAWN BOARD");
+            SpawnCubeWithLifetime();
             return;
         }
-        // ------------------------------------
+        // =============================================================
 
         var result = recognizer.Recognize(gesturePoints);
 
@@ -249,9 +257,6 @@ public class PenDrawing : MonoBehaviour
         if (lastCube != null)
             Destroy(lastCube, cubeLifetime);
 
-        // -----------------------------
-        // ✔ REPLACED CUBE WITH BOARD
-        // -----------------------------
         GameObject boardPrefab = Resources.Load<GameObject>("Board");
 
         if (boardPrefab == null)
