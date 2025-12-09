@@ -4,42 +4,54 @@ using UnityEngine;
 public class WorldScaleController : MonoBehaviour
 {
 
-    bool scaledUp = false;
+ 
     public Transform world;
     public Transform scaler;
 
-    public float factor;
-    SwitchCharacter.CharacterType prevType;
+    public float antScalefactor;
+    public float birdScalefactor;
+
+    SwitchCharacter.CharacterType currentScaledType;
+
+    void Awake()
+    {
+        currentScaledType = SwitchCharacter.CharacterType.Human;
+        scaler.localScale = Vector3.one;
+    }
     public void SetWorldScale(SwitchCharacter.CharacterType newType)
     {
-        Debug.Log("Scale To: " + newType.ToString());
-
-        if(newType == SwitchCharacter.CharacterType.Ant) ScaleUp();
-        if(newType != SwitchCharacter.CharacterType.Ant) ScaleDown();
+        
+        if(newType == SwitchCharacter.CharacterType.Human)
+        {
+            ScaleDown();
+            return;
+        }
+        if(currentScaledType == newType)return ;
+        if(newType == SwitchCharacter.CharacterType.Ant) ScaleTo(antScalefactor);
+        else if(newType == SwitchCharacter.CharacterType.Bird) ScaleTo(birdScalefactor);
+        
+        currentScaledType = newType;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void ScaleDown()
-    {
-        Debug.Log("Scale Down");
-        if(!scaledUp)return;
-        world.parent = scaler;
-        scaler.localScale = Vector3.one;
-        world.parent = null;
-        scaledUp = false;
-
-    }
 
     // Update is called once per frame
-    void ScaleUp()
+    void ScaleTo(float factor)
     {
-        Debug.Log("Scale Up");
-
-        if(scaledUp)return;
+        
         world.parent = scaler;
         scaler.localScale = factor * Vector3.one;
         world.parent = null;
-        scaledUp = true;
+       
+
+    }
+        void ScaleDown()
+    {
+        
+        world.parent = scaler;
+        scaler.localScale = Vector3.one;
+        world.parent = null;
+       currentScaledType = SwitchCharacter.CharacterType.Human;
 
     }
 }
