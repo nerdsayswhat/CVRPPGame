@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.TextCore.Text;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Gravity;
+using UnityEngine.XR.Content.Interaction;
+using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
 public class SwitchCharacter : MonoBehaviour
 {
@@ -10,7 +13,18 @@ public class SwitchCharacter : MonoBehaviour
     public GameObject []antHands;
     public GameObject [] birdWings;
 
+    public GravityProvider gravityProvider;//control the Gravity of Game Object
+
+    public LocomotionManager locomotionManager;// use to enable fly mode
+
+    public DynamicMoveProvider moveProvider;
+    public float humanMoveSpeed;
+    public float antMoveSpeed;
+    public float birdFlySpeed;
+    // change the speed in three modes
+
     WorldScaleController scaleController;
+
 
     public InputActionProperty XButton;
 
@@ -73,12 +87,33 @@ public class SwitchCharacter : MonoBehaviour
         if(newType == CharacterType.Ant) TranssformIntoAnt();
         if(newType == CharacterType.Bird) TransformIntoBird();
 
+        if (gravityProvider != null)
+        gravityProvider.useGravity = (newType != CharacterType.Bird);
+        //control the Gravity of Game Object
+        
+        if (locomotionManager != null)
+        locomotionManager.enableFly = (newType == CharacterType.Bird);
+        // use to enable fly mode
+
+        if(newType == CharacterType.Bird)
+        {
+            moveProvider.moveSpeed = birdFlySpeed;
+        }
+        else if(newType == CharacterType.Ant)
+        {
+            moveProvider.moveSpeed = antMoveSpeed;
+        }
+        else
+        {
+            moveProvider.moveSpeed = humanMoveSpeed;
+        }
+
+      
         scaleController.SetWorldScale(newType);
         currentCharacter = newType;
         
     }
-
-
+    
     void TransformIntoHuman()
     {
         foreach(var hand in humanHands)

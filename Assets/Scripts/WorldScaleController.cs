@@ -16,6 +16,7 @@ public class WorldScaleController : MonoBehaviour
     void Awake()
     {
         currentScaledType = SwitchCharacter.CharacterType.Human;
+        if(scaler != null)
         scaler.localScale = Vector3.one;
     }
     public void SetWorldScale(SwitchCharacter.CharacterType newType)
