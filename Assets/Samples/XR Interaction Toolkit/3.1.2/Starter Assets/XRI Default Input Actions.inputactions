@@ -329,15 +329,6 @@
             "id": "5fe596f9-1b7b-49b7-80a7-3b5195caf74d",
             "actions": [
                 {
-                    "name": "XButton",
-                    "type": "Value",
-                    "id": "eb789389-454e-4c75-ba9e-212e679f5702",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Position",
                     "type": "Value",
                     "id": "83a7af0b-87e3-42c3-a909-95fbf8091e4f",
@@ -459,6 +450,15 @@
                     "type": "Value",
                     "id": "c01850c4-700b-4ae6-a187-a894afef5bbd",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "XButton",
+                    "type": "Value",
+                    "id": "e52ab303-0ee4-471e-9862-92d94d47779e",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -874,8 +874,8 @@
                 },
                 {
                     "name": "",
-                    "id": "19f74327-9a7a-401d-a0d0-b00aa17c62be",
-                    "path": "<XRInputV1::Oculus::MetaQuestTouchPlusControllerOpenXR>{LeftHand}/primarybutton",
+                    "id": "bd36a1b4-70ef-4c34-90df-ff3fd2a5ad97",
+                    "path": "<XRController>{LeftHand}/{PrimaryButton}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -885,7 +885,7 @@
                 },
                 {
                     "name": "",
-                    "id": "6017072e-2727-4c90-a123-665f5aebfcd1",
+                    "id": "019232fa-0001-4580-a1d1-5d94890cb040",
                     "path": "<QuestProTouchController>{LeftHand}/primaryButton",
                     "interactions": "",
                     "processors": "",
