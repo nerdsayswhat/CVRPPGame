@@ -62,9 +62,12 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _Max: 1.94
+    - _Min: 0.52
+    - _Shades: 0.49
     m_Colors:
     - _BaseColor: {r: 0.61006284, g: 0.61006284, b: 0.61006284, a: 1}
-    - _Color: {r: 0.99371064, g: 0.9733261, b: 0.6218503, a: 1}
+    - _Color: {r: 0.82809216, g: 0.9909462, b: 0.99371064, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
