@@ -42,15 +42,15 @@
     <UnityVersion>6000.2.6f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Users\61735\.vscode\extensions\visualstudiotoolsforunity.vstuc-1.2.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
+    <Analyzer Include="C:\Users\61735\.vscode\extensions\visualstudiotoolsforunity.vstuc-1.2.1\Analyzers\Microsoft.Unity.Analyzers.dll" />
     <Analyzer Include="D:\unityhub\editor\6000.2.6f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="D:\unityhub\editor\6000.2.6f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="D:\unityhub\editor\6000.2.6f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Samples\XR Interaction Toolkit\3.1.2\Spatial Keyboard\Editor\Scripts\XRKeyboardConfigEditor.cs" />
     <Compile Include="Assets\Samples\XR Interaction Toolkit\3.1.2\Spatial Keyboard\Editor\Scripts\XRKeyboardDisplayEditor.cs" />
     <Compile Include="Assets\Samples\XR Interaction Toolkit\3.1.2\Spatial Keyboard\Editor\Scripts\SpatialKeyboardSampleProjectValidation.cs" />
-    <Compile Include="Assets\Samples\XR Interaction Toolkit\3.1.2\Spatial Keyboard\Editor\Scripts\XRKeyboardConfigEditor.cs" />
     <Compile Include="Assets\Samples\XR Interaction Toolkit\3.1.2\Spatial Keyboard\Editor\Scripts\KeyMappingPropertyDrawer.cs" />
     <Compile Include="Assets\Samples\XR Interaction Toolkit\3.1.2\Spatial Keyboard\Editor\Scripts\KeyboardOptimizerEditor.cs" />
     <Compile Include="Assets\Samples\XR Interaction Toolkit\3.1.2\Spatial Keyboard\Editor\Scripts\XRKeyboardEditor.cs" />
