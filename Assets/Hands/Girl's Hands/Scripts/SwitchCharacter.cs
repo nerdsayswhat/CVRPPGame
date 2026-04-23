@@ -60,23 +60,29 @@ public class SwitchCharacter : MonoBehaviour
         if(Keyboard.current.rightArrowKey.wasPressedThisFrame) Switch(CharacterType.Bird);
 
     }
-
+    int toggleStep = 0;
     public void ToggleToNext()
-    {
-         if(currentCharacter == CharacterType.Human) {
-            Switch(CharacterType.Ant);
-            return;
-        }
+{
+    toggleStep++;
 
-         if(currentCharacter == CharacterType.Ant){ 
+    if (toggleStep > 3) toggleStep = 0;
+
+    switch (toggleStep)
+    {
+        case 0:
+            Switch(CharacterType.Human);
+            break;
+        case 1:
+            Switch(CharacterType.Ant);
+            break;
+        case 2:
+            Switch(CharacterType.Human);
+            break;
+        case 3:
             Switch(CharacterType.Bird);
-            return;
-         }
-         if(currentCharacter == CharacterType.Bird) {
-            Switch (CharacterType.Human);
-         return;
-         }
+            break;
     }
+}
 
     public void Switch(CharacterType newType)
     {

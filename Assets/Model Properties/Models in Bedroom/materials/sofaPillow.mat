@@ -58,12 +58,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Metallic: 0
     - _QueueOffset: 0
     - _Smoothness: 0.5
     - _WorkflowMode: 1
     m_Colors:
-    - _BaseColor: {r: 0.735849, g: 0.496899, b: 0.483624, a: 1}
-    - _Color: {r: 0.735849, g: 0.496899, b: 0.48362392, a: 1}
+    - _BaseColor: {r: 1, g: 0.088098526, b: 0.028301716, a: 1}
+    - _Color: {r: 1, g: 0.08809852, b: 0.028301714, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

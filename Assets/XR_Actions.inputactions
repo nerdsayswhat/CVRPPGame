@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "XR_Actions",
     "maps": [
         {
@@ -11,7 +12,7 @@
                     "id": "0cb75243-b4fa-407d-984c-93dd69e4dfa1",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Press(behavior=2)",
                     "initialStateCheck": false
                 },
                 {
